@@ -2,28 +2,39 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "./Auth.css";
-import logo from "../img/logo.png";
-import hero2 from "../img/hweo2.png";
+import HeaderInicial from "../pages/header-home";
 
 const Login = () => {
-  const [taxNumber, setTaxNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitting login with:', { taxNumber, password });
+    console.log('Submitting login with:', { email, password });
 
     try {
-      const response = await axios.post('https://interview.t-alpha.com.br/api/auth/login', {
-        taxNumber,
+      const response = await axios.post('http://localhost:5001/api/User/Login', {
+        email,
         password,
       });
-      console.log('Login response:', response);
 
+      // Verifique se a resposta contém os dados esperados
       if (response.data && response.data.data && response.data.data.token) {
-        localStorage.setItem('token', response.data.data.token);
-        console.log('Token stored:', localStorage.getItem('token'));
+        const { token, id: userId, isAdministrator } = response.data.data;
+
+        // Armazenar o token, userId e isAdmin no localStorage
+        localStorage.setItem('token', token);
+        localStorage.setItem('userId', userId); // Armazena o ID do usuário
+        localStorage.setItem('isAdmin', isAdministrator); // Armazena o status de administrador
+
+        console.log('Token, User ID, and Admin status stored:', {
+          token: localStorage.getItem('token'),
+          userId: localStorage.getItem('userId'),
+          isAdmin: localStorage.getItem('isAdmin')
+        });
+
+        // Redireciona para a página de produtos
         navigate('/products');
       } else {
         console.error('No token received:', response.data);
@@ -36,45 +47,35 @@ const Login = () => {
   };
 
   return (
-    <div class="page-login d-flex justify-content-center align-items-center">
-      <div class="container">
-        <div class="d-flex justify-content-center align-items-center flex-wrap">
-        <div class="formulario col-4 position-relative">
-        
-        <form class="d-flex flex-column" onSubmit={handleSubmit}>
-        <img src={logo} alt="logo da empresa"/>
-      <h2 class="text-center mb-5">Login</h2>
-      <input
-        type="text"
-        value={taxNumber}
-        onChange={(e) => setTaxNumber(e.target.value)}
-        placeholder="CPF"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-      />
-      <button class="login" type="submit">Login</button>
-      <button><a href="/register">Register</a></button>
+    <div>
+      <HeaderInicial />
 
-    </form>
-
+      <div className="page-login d-flex justify-content-center align-items-center">
+        <div className="container">
+          <div className="d-flex justify-content-center align-items-center flex-wrap">
+            <div className="formulario">
+              <form className="d-flex flex-column justify-content-center" onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="user"
+                  required
+                />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  required
+                />
+                <button className="login" type="submit">Logar</button>
+              </form>
+            </div>
+          </div>
         </div>
-        <div className="box-hero col-4">
-        <img src={hero2} alt="lmagem decoração"/>
-        <div class="hero-decoration"></div>
-        </div>
-
-        </div>
-        
       </div>
-      
     </div>
-    
   );
 };
 

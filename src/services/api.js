@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://interview.t-alpha.com.br',
+  baseURL: 'http://localhost:5001/api/Book',
 });
 
 export default api;

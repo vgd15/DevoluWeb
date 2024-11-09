@@ -2,28 +2,30 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ProductItem from './ProductItem';
 import Header from '../header/header.jsx';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/swiper-bundle.css';
-import "./products.css";
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]); // Estado para produtos filtrados
+  const [filteredProducts, setFilteredProducts] = useState([]); // Inicialmente vazio
+  const [inputValue, setInputValue] = useState('');
   const token = localStorage.getItem('token');
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
+  // Fetch all products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
+      if (!token) {
+        console.error('No token available. You must log in first.');
+        return;
+      }
       try {
-        const response = await axios.get('https://interview.t-alpha.com.br/api/products/get-all-products', {
+        const response = await axios.get('http://localhost:5001/api/Book', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (response.data && response.data.data && Array.isArray(response.data.data.products)) {
-          setProducts(response.data.data.products);
-          setFilteredProducts(response.data.data.products); // Inicialmente exibe todos os produtos
+        if (response.data && Array.isArray(response.data.data)) {
+          setProducts(response.data.data);
         } else {
           console.error('Unexpected response format:', response.data);
         }
@@ -35,55 +37,49 @@ const ProductList = () => {
     fetchProducts();
   }, [token]);
 
-  const handleSearch = (term) => {
-    const filtered = products.filter(product => 
-      product.name.toLowerCase().includes(term.toLowerCase())
-    );
-    setFilteredProducts(filtered);
+  // Filter products based on search term (ISBN)
+  const handleSearch = () => {
+    const term = inputValue.trim();
+    if (term) {
+      // Filtra apenas o produto que contém o ISBN correspondente
+      const filtered = products.filter((product) =>
+        product.isbn10.includes(term) || product.isbn13.includes(term)
+      );
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts([]); // Se o campo de busca estiver vazio, oculta todos os produtos
+    }
   };
 
   return (
     <div>
-      <Header onSearch={handleSearch} /> {/* Passa a função de busca */}
-      <div className="title">
-        <h1 className="text-center m-5 fw-bold">Todos os produtos</h1>
-      </div>
-      <div className="container">
-        <Swiper
-          modules={[Navigation, Pagination, Autoplay]}
-          spaceBetween={10}
-          slidesPerView={3}
-          navigation={true}
-          loop={true}
-          autoplay={{
-            delay: 3000,
-            disableOnInteraction: false,
-          }}
-          breakpoints={{
-            0: {
-              slidesPerView: 1, // Para telas muito pequenas (opcional)
-              spaceBetween: 10,
-            },
-            576: {
-              slidesPerView: 2, // Para telas até 991px
-              spaceBetween: 10,
-            },
-            991: {
-              slidesPerView: 3, // Para telas acima de 991px
-              spaceBetween: 10,
-            },
-          }}
-        >
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <SwiperSlide key={product.id}>
-                <ProductItem product={product} />
-              </SwiperSlide>
-            ))
-          ) : (
-            <p>No products found</p>
-          )}
-        </Swiper>
+      <Header />
+      
+        <div className="home-inside">
+        <div className="container">
+          <div className="cabecalho__pesquisar">
+            <input
+              type="search"
+              placeholder="Digite aqui o ISBN"
+              className="pesquisar__input"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+            <button className="pesquisar__botao" onClick={handleSearch}>
+              Buscar
+            </button>
+          </div>
+
+          <div className="produtos">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <ProductItem key={product.id} product={product} isAdmin={isAdmin} />
+              ))
+            ) : (
+              <p></p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

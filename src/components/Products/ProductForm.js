@@ -3,45 +3,70 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const ProductForm = () => {
-  const [name, setName] = useState('');
+  const [isbn, setIsbn] = useState('');
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [stock, setStock] = useState('');
+  const [author, setAuthor] = useState('');
+  const [genre, setGenre] = useState('');
+  const [imageLink, setImageLink] = useState('');
+  const [isbn10, setIsbn10] = useState('');
+  const [isbn13, setIsbn13] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+
+  const fetchBookByIsbn = async () => {
+    if (isbn) {
+      try {
+        const response = await axios.get(`http://localhost:5001/api/Book/External/${isbn}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const bookData = response.data.data;
+        setTitle(bookData.title || '');
+        setDescription(bookData.description || '');
+        setAuthor(bookData.author || '');
+        setGenre(bookData.genre || '');
+        setImageLink(bookData.imageLink || '');
+        setIsbn10(bookData.isbn10 || '');
+        setIsbn13(bookData.isbn13 || '');
+      } catch (error) {
+        console.error('Error fetching book by ISBN:', error);
+      }
+    }
+  };
 
   useEffect(() => {
     if (id) {
       const fetchProduct = async () => {
         try {
-          const response = await axios.get(`https://interview.t-alpha.com.br/api/products/get-one-product/${id}`, {
+          const response = await axios.get(`http://localhost:5001/api/Book/${id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
           const product = response.data.data;
-          console.log('Fetched product:', product);
-          setName(product.name || '');
+          setTitle(product.title || '');
           setDescription(product.description || '');
-          setPrice(product.price !== undefined ? product.price : '');
-          setStock(product.stock !== undefined ? product.stock : '');
+          setAuthor(product.author || '');
+          setGenre(product.genre || '');
+          setImageLink(product.imageLink || '');
+          setIsbn10(product.isbn10 || '');
+          setIsbn13(product.isbn13 || '');
         } catch (error) {
           console.error('Error fetching product:', error);
         }
       };
-
       fetchProduct();
     }
   }, [id, token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const product = { name, description, price: parseFloat(price), stock: parseInt(stock) };
-    console.log('Submitting product:', product);
+    const product = { title, description, author, genre, imageLink, isbn10, isbn13 };
 
     try {
-      let response;
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -50,73 +75,95 @@ const ProductForm = () => {
       };
 
       if (id) {
-        response = await axios.patch(`https://interview.t-alpha.com.br/api/products/update-product/${id}`, product, config);
+        await axios.put(`http://localhost:5001/api/Book/${id}`, product, config);
       } else {
-        response = await axios.post('https://interview.t-alpha.com.br/api/products/create-product', product, config);
+        await axios.post('http://localhost:5001/api/Book', product, config);
       }
-      console.log('Server response:', response);
+
       navigate('/products');
     } catch (error) {
+      console.error('Error submitting product:', error);
       if (error.response) {
         console.error('Error response data:', error.response.data);
-        console.error('Error response status:', error.response.status);
-        console.error('Error response headers:', error.response.headers);
-      } else if (error.request) {
-        console.error('Error request:', error.request);
-      } else {
-        console.error('Error message:', error.message);
       }
-      console.error('Error config:', error.config);
     }
   };
 
   return (
-
     <div className="page d-flex justify-content-center align-items-center">
-       <div class="container">
-       <div class="d-flex justify-content-center align-items-center">
-       < div class="formulario col-6">
-       <form class="d-flex flex-column" onSubmit={handleSubmit}>
-      <h2 class="text-center">{id ? 'Edit Product' : 'Create Product'}</h2>
-      <input
-        type="text"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Product name"
-        required
-      />
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Product description"
-        required
-      />
-      <input
-        type="number"
-        step="0.01"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-        placeholder="Product Price"
-        required
-      />
-      <input
-        type="number"
-        value={stock}
-        onChange={(e) => setStock(e.target.value)}
-        placeholder="Product stock"
-        required
-      />
-      <button type="submit">{id ? 'Update' : 'Create'}</button>
+      <div className="container">
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="formulario col-6">
+            <form className="d-flex flex-column" onSubmit={handleSubmit}>
+              <h2 className="text-center">{id ? 'Edit Product' : 'Create Product'}</h2>
 
-      <a class="pb-2" href='/products'>Voltar para página inicial</a>
-    </form>
+              <input
+                type="text"
+                value={isbn}
+                onChange={(e) => setIsbn(e.target.value)}
+                placeholder="Digite o ISBN para buscar"
+              />
+              <button className="isbn" type="button" onClick={fetchBookByIsbn}>
+                Buscar Livro por ISBN
+              </button>
+
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Title"
+                required
+              />
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Description"
+                required
+              />
+              <input
+                type="text"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                placeholder="Author"
+                required
+              />
+              <input
+                type="text"
+                value={genre}
+                onChange={(e) => setGenre(e.target.value)}
+                placeholder="Genre"
+                required
+              />
+              <input
+                type="url"
+                value={imageLink}
+                onChange={(e) => setImageLink(e.target.value)}
+                placeholder="Link da imagem"
+                required
+              />
+              <input
+                type="number"
+                value={isbn10}
+                onChange={(e) => setIsbn10(e.target.value)}
+                placeholder="ISBN-10"
+                required
+              />
+              <input
+                type="number"
+                value={isbn13}
+                onChange={(e) => setIsbn13(e.target.value)}
+                placeholder="ISBN-13"
+                required
+              />
+              <button type="submit">{id ? 'Update' : 'Create'}</button>
+              <a className="pb-2" href="/products">
+                Voltar para página inicial
+              </a>
+            </form>
+          </div>
         </div>
-       
-       </div>
-       </div>
-      
+      </div>
     </div>
-    
   );
 };
 
