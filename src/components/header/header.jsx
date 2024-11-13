@@ -6,6 +6,10 @@ import logo from "../img/DevoluWeb.svg";
 function Header() {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
+  const handleLogout = () => {
+    localStorage.removeItem('isAdmin'); // Remove o item 'isAdmin' do localStorage
+  };
+
   return (
     <header className="header-geral">
       <section className="wrapper-desktop d-flex justify-content-between align-items-center">
@@ -27,18 +31,25 @@ function Header() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/">
+                  <Link to="/" onClick={handleLogout}>
                     <button>Logout</button>
                   </Link>
                 </li>
               </>
             )}
             {!isAdmin && (
-              <li>
-                <Link to="/meus-dados">
-                  <button>Meus Dados</button>
-                </Link>
-              </li>
+              <>
+                <li>
+                  <Link to="/meus-dados">
+                    <button>Meus Dados</button>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/" onClick={handleLogout}>
+                    <button>Logout</button>
+                  </Link>
+                </li>
+              </>
             )}
           </ul>
         </div>
