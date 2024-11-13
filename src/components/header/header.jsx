@@ -26,6 +26,11 @@ function Header() {
                     <button>Usuários</button>
                   </Link>
                 </li>
+                <li>
+                  <Link to="/">
+                    <button>Logout</button>
+                  </Link>
+                </li>
               </>
             )}
             {!isAdmin && (
