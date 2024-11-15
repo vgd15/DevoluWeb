@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5001/api/Book',
+  baseURL: 'https://pj2-biblioteca-univesp.onrender.com/api/Book',
 });
 
 export default api;

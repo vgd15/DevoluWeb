@@ -13,7 +13,7 @@ const DadosUser = () => {
 
   const handleUpdateUserInfo = async () => {
     try {
-      await axios.put(`http://localhost:5001/api/User/${userId}`, {
+      await axios.put(`https://pj2-biblioteca-univesp.onrender.com/api/User/${userId}`, {
         email,
         firstName,
         lastName,
@@ -37,7 +37,7 @@ const DadosUser = () => {
 
     try {
       await axios.put(
-        `http://localhost:5001/api/User/UpdatePassword/${userId}`,
+        `https://pj2-biblioteca-univesp.onrender.com/api/User/UpdatePassword/${userId}`,
         { 
           oldPassword, 
           newPassword 

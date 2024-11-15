@@ -12,7 +12,7 @@ const ProductItem = ({ product, isAdmin }) => {
   const handleDelete = async () => {
     const token = localStorage.getItem('token');
     try {
-      await axios.delete(`http://localhost:5001/api/Book/${product.id}`, {
+      await axios.delete(`https://pj2-biblioteca-univesp.onrender.com/api/Book/${product.id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -27,7 +27,7 @@ const ProductItem = ({ product, isAdmin }) => {
   const handleReturn = async () => {
     const token = localStorage.getItem('token');
     try {
-      await axios.post(`http://localhost:5001/api/Book/Return/${product.id}`, null, {
+      await axios.post(`https://pj2-biblioteca-univesp.onrender.com/api/Book/Return/${product.id}`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

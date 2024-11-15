@@ -15,7 +15,7 @@ function RegisterUser() {
     try {
       const token = localStorage.getItem('token'); // Supondo que o token foi armazenado ao fazer login
 
-      const response = await axios.post('http://localhost:5001/api/User', {
+      const response = await axios.post('https://pj2-biblioteca-univesp.onrender.com/api/User', {
         email,
         firstName,
         lastName,

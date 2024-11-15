@@ -13,7 +13,7 @@ const Users = () => {
 
   const fetchUsers = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/User', {
+      const response = await axios.get('https://pj2-biblioteca-univesp.onrender.com/api/User', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -28,7 +28,7 @@ const Users = () => {
   const handleDeactivateUser = async (userId) => {
     try {
       const response = await axios.put(
-        `http://localhost:5001/api/User/DeactivateUser/${userId}`,
+        `https://pj2-biblioteca-univesp.onrender.com/api/User/DeactivateUser/${userId}`,
         {},
         {
           headers: {

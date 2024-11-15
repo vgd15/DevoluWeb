@@ -18,7 +18,7 @@ const ProductList = () => {
         return;
       }
       try {
-        const response = await axios.get('http://localhost:5001/api/Book', {
+        const response = await axios.get('https://pj2-biblioteca-univesp.onrender.com/api/Book', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

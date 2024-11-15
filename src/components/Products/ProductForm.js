@@ -18,7 +18,7 @@ const ProductForm = () => {
   const fetchBookByIsbn = async () => {
     if (isbn) {
       try {
-        const response = await axios.get(`http://localhost:5001/api/Book/External/${isbn}`, {
+        const response = await axios.get(`https://pj2-biblioteca-univesp.onrender.com/api/Book/External/${isbn}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -41,7 +41,7 @@ const ProductForm = () => {
     if (id) {
       const fetchProduct = async () => {
         try {
-          const response = await axios.get(`http://localhost:5001/api/Book/${id}`, {
+          const response = await axios.get(`https://pj2-biblioteca-univesp.onrender.com/api/Book/${id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -75,9 +75,9 @@ const ProductForm = () => {
       };
 
       if (id) {
-        await axios.put(`http://localhost:5001/api/Book/${id}`, product, config);
+        await axios.put(`https://pj2-biblioteca-univesp.onrender.com/api/Book/${id}`, product, config);
       } else {
-        await axios.post('http://localhost:5001/api/Book', product, config);
+        await axios.post('https://pj2-biblioteca-univesp.onrender.com/api/Book', product, config);
       }
 
       navigate('/products');
